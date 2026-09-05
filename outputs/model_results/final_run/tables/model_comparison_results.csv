@@ -1,0 +1,7 @@
+﻿run;model;cv_mae;cv_rmse;cv_r2;test_mae;test_rmse;test_r2;best_params
+run2_predictor_plus_amenities_plus_category;HistGradientBoosting;40,014648670561925;65,8120813865928;0,7408325610829665;39,36510275788253;65,28403574894168;0,7462059906629674;"{""model__max_leaf_nodes"": 63, ""model__max_iter"": 200, ""model__learning_rate"": 0.1, ""model__l2_regularization"": 0.0}"
+run2_predictor_plus_amenities_plus_category;Extra_Trees;42,32145774668828;70,25241198781703;0,7046786069172168;41,35007893494504;69,36458631563694;0,7134878921138348;"{""model__n_estimators"": 300, ""model__min_samples_leaf"": 3, ""model__max_features"": 0.7, ""model__max_depth"": 30}"
+run2_predictor_plus_amenities_plus_category;Random_Forest;42,51852128714192;69,93225298087602;0,7073630121775829;41,61056302807416;69,22283170039269;0,7146577372935659;"{""model__n_estimators"": 300, ""model__min_samples_leaf"": 3, ""model__max_features"": 0.7, ""model__max_depth"": 30}"
+run2_predictor_plus_amenities_plus_category;Ridge_Regression;54,177102330624585;83,02315210166638;0,5875952923740899;53,860641182641466;82,4483115495156;0,5952089411102899;"{""model__alpha"": 100.0}"
+run2_predictor_plus_amenities_plus_category;ElasticNet;54,17474951309483;83,19142314173313;0,5859216038655198;53,90003818924348;82,73071815501525;0,592431165629801;"{""model__alpha"": 0.01, ""model__l1_ratio"": 0.5}"
+run2_predictor_plus_amenities_plus_category;Dummy_Baseline;89,31277397048837;133,8924200291422;-0,07260415665764046;89,98370102074415;133,99981570567093;-0,06924143694680329;"{""model__strategy"": ""median""}"

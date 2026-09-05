@@ -1,0 +1,8 @@
+data/raw/*
+!data/raw/README.md
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+.streamlit/

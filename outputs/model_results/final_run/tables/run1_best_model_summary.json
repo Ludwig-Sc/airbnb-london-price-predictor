@@ -1,0 +1,15 @@
+{
+    "run": "run1_predictor_plus_amenities",
+    "best_model": "Random_Forest",
+    "best_result": {
+        "run": "run1_predictor_plus_amenities",
+        "model": "Random_Forest",
+        "cv_mae": 50.13648553600694,
+        "cv_rmse": 81.37310448747779,
+        "cv_r2": 0.6038297768432904,
+        "test_mae": 49.14062090195796,
+        "test_rmse": 80.28467100070213,
+        "test_r2": 0.616175544253347,
+        "best_params": "{\"model__n_estimators\": 300, \"model__min_samples_leaf\": 1, \"model__max_features\": \"sqrt\", \"model__max_depth\": 30}"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "predictor_file": "predictor\\listings_final_bedrooms_with_id.csv",
+    "amenities_file": "amenities_reduced_outputs\\amenities_reduced_grouped.csv",
+    "category_dir": "category_csvs",
+    "output_base_dir": "prediction_model_results\\20260720_233836",
+    "test_size": 0.2,
+    "random_state": 42,
+    "cv": 3,
+    "search_type": "random",
+    "n_iter": 15,
+    "sample_size": null,
+    "price_upper_quantile": 0.99,
+    "use_log_price_feature": true
+}

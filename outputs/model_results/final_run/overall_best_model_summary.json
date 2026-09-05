@@ -1,0 +1,37 @@
+{
+    "best_overall": {
+        "run": "run2_predictor_plus_amenities_plus_category",
+        "model": "HistGradientBoosting",
+        "cv_mae": 40.014648670561925,
+        "cv_rmse": 65.8120813865928,
+        "cv_r2": 0.7408325610829665,
+        "test_mae": 39.36510275788253,
+        "test_rmse": 65.28403574894168,
+        "test_r2": 0.7462059906629674,
+        "best_params": "{\"model__max_leaf_nodes\": 63, \"model__max_iter\": 200, \"model__learning_rate\": 0.1, \"model__l2_regularization\": 0.0}"
+    },
+    "all_runs": [
+        {
+            "run": "run2_predictor_plus_amenities_plus_category",
+            "model": "HistGradientBoosting",
+            "cv_mae": 40.014648670561925,
+            "cv_rmse": 65.8120813865928,
+            "cv_r2": 0.7408325610829665,
+            "test_mae": 39.36510275788253,
+            "test_rmse": 65.28403574894168,
+            "test_r2": 0.7462059906629674,
+            "best_params": "{\"model__max_leaf_nodes\": 63, \"model__max_iter\": 200, \"model__learning_rate\": 0.1, \"model__l2_regularization\": 0.0}"
+        },
+        {
+            "run": "run1_predictor_plus_amenities",
+            "model": "Random_Forest",
+            "cv_mae": 50.13648553600694,
+            "cv_rmse": 81.37310448747779,
+            "cv_r2": 0.6038297768432904,
+            "test_mae": 49.14062090195796,
+            "test_rmse": 80.28467100070213,
+            "test_r2": 0.616175544253347,
+            "best_params": "{\"model__n_estimators\": 300, \"model__min_samples_leaf\": 1, \"model__max_features\": \"sqrt\", \"model__max_depth\": 30}"
+        }
+    ]
+}

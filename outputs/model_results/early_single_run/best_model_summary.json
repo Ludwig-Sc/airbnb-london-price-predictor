@@ -1,0 +1,13 @@
+{
+    "best_model": "Random_Forest",
+    "best_result": {
+        "model": "Random_Forest",
+        "cv_mae": 46.63735430121853,
+        "cv_rmse": 90.48788360486749,
+        "cv_r2": 0.6315981754591701,
+        "test_mae": 45.313957756221505,
+        "test_rmse": 88.40968946427704,
+        "test_r2": 0.6413578261312309,
+        "best_params": "{\"regressor__model__n_estimators\": 200, \"regressor__model__min_samples_leaf\": 1, \"regressor__model__max_features\": 0.7, \"regressor__model__max_depth\": 40}"
+    }
+}
