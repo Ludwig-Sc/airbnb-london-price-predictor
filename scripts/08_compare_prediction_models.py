@@ -67,9 +67,9 @@ class AirbnbPredictionModelRunner:
         test_size=0.2,
         random_state=42,
         cv=3,
-        search_type="random",   # "random" oder "grid"
+        search_type="random",   # "random" or "grid"
         n_iter=15,
-        sample_size=None,       # z. B. 30000 für schnellen Test, None für alle Daten
+        sample_size=None,       # e.g. 30000 for rapid testing, None for full dataset
         price_upper_quantile=0.99,
         use_log_price_feature=True,
         save_models=True,
@@ -108,7 +108,7 @@ class AirbnbPredictionModelRunner:
         path = Path(path)
 
         if not path.exists():
-            raise FileNotFoundError(f"Datei nicht gefunden: {path.resolve()}")
+            raise FileNotFoundError(f"File not found: {path.resolve()}")
 
         try:
             df = pd.read_csv(
@@ -198,13 +198,13 @@ class AirbnbPredictionModelRunner:
         predictor_df = self.read_csv_safely(self.predictor_file)
 
         if "price" not in predictor_df.columns:
-            raise KeyError("In predictor/listings_final_bedrooms.csv fehlt die Spalte 'price'.")
+            raise KeyError("Column 'price' missing in predictor dataset.")
 
         predictor_df = self.clean_object_columns(predictor_df)
 
         predictor_df["price"] = pd.to_numeric(predictor_df["price"], errors="coerce")
 
-        print("Predictor-Daten geladen:", predictor_df.shape)
+        print("Predictor data loaded:", predictor_df.shape)
 
         return predictor_df
 
@@ -224,8 +224,8 @@ class AirbnbPredictionModelRunner:
 
             if found is None:
                 raise FileNotFoundError(
-                    "amenities_reduced_grouped.csv wurde nicht gefunden. "
-                    "Bitte amenities_file korrekt setzen."
+                    "amenities_reduced_grouped.csv not found. "
+                    "Please set amenities_file path correctly."
                 )
 
             self.amenities_file = found
@@ -234,12 +234,12 @@ class AirbnbPredictionModelRunner:
         amenities_df = self.clean_object_columns(amenities_df)
 
         if "id" not in amenities_df.columns:
-            raise KeyError("In amenities_reduced_grouped.csv fehlt die Spalte 'id'.")
+            raise KeyError("Column 'id' missing in amenities_reduced_grouped.csv.")
 
         if "price" in amenities_df.columns:
             amenities_df = amenities_df.drop(columns=["price"])
 
-        print("Amenities-Daten geladen:", amenities_df.shape)
+        print("Amenities data loaded:", amenities_df.shape)
 
         return amenities_df
 
@@ -263,7 +263,7 @@ class AirbnbPredictionModelRunner:
                 how="left"
             )
 
-            print("Predictor + Amenities über id gemerged:", merged_df.shape)
+            print("Predictor + Amenities merged via ID:", merged_df.shape)
             return merged_df
 
         # Case 2: Predictor file has no ID -> Row-order merge
@@ -289,21 +289,20 @@ class AirbnbPredictionModelRunner:
 
             price_match_rate = (predictor_price == amenities_price).mean()
 
-            print(f"Price Match Rate zwischen Predictor und Amenities: {price_match_rate:.4f}")
+            print(f"Price match rate between Predictor and Amenities: {price_match_rate:.4f}")
 
             if price_match_rate < 0.99:
                 raise ValueError(
-                    "Row-order Merge wurde abgebrochen, weil die price-Spalten nicht ausreichend übereinstimmen.\n"
-                    f"Übereinstimmung: {price_match_rate:.2%}\n"
-                    "Das deutet darauf hin, dass die Reihenfolge der Dateien nicht identisch ist.\n"
-                    "Bitte id-Spalte in listings_final_bedrooms.csv ergänzen."
+                    "Row-order merge aborted due to price mismatch.\n"
+                    f"Match rate: {price_match_rate:.2%}\n"
+                    "Please ensure row orders are aligned or provide an ID column."
                 )
 
         # id from amenities 
         if "id" not in amenities_df.columns:
             raise KeyError(
-                "amenities_reduced_grouped.csv enthält ebenfalls keine id-Spalte. "
-                "Dann ist kein sauberer Merge mit category_csvs möglich."
+                "amenities_reduced_grouped.csv does not contain an id column. "
+                "Cannot perform clean merge with category_csvs."
             )
 
         # Remove 'price' from 'amenities' because 'predictor_df' already contains 'price'.
@@ -330,8 +329,8 @@ class AirbnbPredictionModelRunner:
             axis=1
         )
 
-        print("Predictor + Amenities über Zeilenreihenfolge verbunden:", merged_df.shape)
-        print("id wurde aus amenities_reduced_grouped.csv übernommen.")
+        print("Predictor + Amenities concatenated by row order:", merged_df.shape)
+        print("ID retained from amenities_reduced_grouped.csv.")
 
         return merged_df
 
@@ -404,7 +403,7 @@ class AirbnbPredictionModelRunner:
             path = self.category_dir / filename
 
             if not path.exists():
-                print(f"Zusatzdatei nicht gefunden, übersprungen: {filename}")
+                print(f"Extra file not found, skipping: {filename}")
                 continue
 
             temp = self.read_csv_safely(path)
@@ -412,7 +411,7 @@ class AirbnbPredictionModelRunner:
 
             available_cols = [col for col in wanted_cols if col in temp.columns]
 
-            # Nur Spalten nehmen, die noch nicht existieren
+            # Only take columns that do not already exist
             selected_cols = [
                 col for col in available_cols
                 if col == "id" or col not in existing_columns
@@ -439,11 +438,11 @@ class AirbnbPredictionModelRunner:
             used_columns.extend([col for col in selected_cols if col != "id"])
 
         if merged_extra is None:
-            print("Keine zusätzlichen category_csvs Features gefunden.")
+            print("No additional category_csvs features found.")
             return None, []
 
-        print("Zusätzliche category_csvs Features:", merged_extra.shape)
-        print("Verwendete Zusatzspalten:", used_columns)
+        print("Additional category_csvs features:", merged_extra.shape)
+        print("Columns used:", used_columns)
 
         return merged_extra, used_columns
 
@@ -727,7 +726,7 @@ class AirbnbPredictionModelRunner:
         best_estimators = {}
 
         for model_name, model_info in models.items():
-            print(f"\nTraining Modell: {model_name}")
+            print(f"\nTraining model: {model_name}")
 
             pipeline = Pipeline([
                 ("preprocessor", preprocessor),
@@ -881,7 +880,7 @@ class AirbnbPredictionModelRunner:
             models_dir / "best_overall_estimator.joblib"
         )
 
-        print("\nBestes Modell für diesen Run:", best_model_name)
+        print("\nBest model for this run:", best_model_name)
         print(best_row)
 
         self.create_visualizations(
@@ -920,7 +919,7 @@ class AirbnbPredictionModelRunner:
         plt.figure(figsize=(10, 6))
         plt.barh(df_mae["model"][::-1], df_mae["test_mae"][::-1])
         plt.xlabel("Test MAE in £")
-        plt.ylabel("Modell")
+        plt.ylabel("Model")
         plt.title("Model Comparison: MAE")
         plt.tight_layout()
         plt.savefig(plots_dir / "01_model_comparison_mae.png", dpi=150)
@@ -932,7 +931,7 @@ class AirbnbPredictionModelRunner:
         plt.figure(figsize=(10, 6))
         plt.barh(df_rmse["model"][::-1], df_rmse["test_rmse"][::-1])
         plt.xlabel("Test RMSE in £")
-        plt.ylabel("Modell")
+        plt.ylabel("Model")
         plt.title("Model Comparison: RMSE")
         plt.tight_layout()
         plt.savefig(plots_dir / "02_model_comparison_rmse.png", dpi=150)
@@ -944,7 +943,7 @@ class AirbnbPredictionModelRunner:
         plt.figure(figsize=(10, 6))
         plt.barh(df_r2["model"][::-1], df_r2["test_r2"][::-1])
         plt.xlabel("Test R²")
-        plt.ylabel("Modell")
+        plt.ylabel("Model")
         plt.title("Model Comparison: R²")
         plt.tight_layout()
         plt.savefig(plots_dir / "03_model_comparison_r2.png", dpi=150)
@@ -1080,7 +1079,7 @@ class AirbnbPredictionModelRunner:
         model = best_estimator.named_steps["model"]
         feature_names = self.get_feature_names_from_pipeline(best_estimator)
 
-        # Modellinterne Importance, falls verfügbar
+        # Model-native feature importance if available
         if hasattr(model, "feature_importances_"):
             importance_values = model.feature_importances_
 
@@ -1192,7 +1191,7 @@ class AirbnbPredictionModelRunner:
             plt.close()
 
         except Exception as e:
-            print("Permutation Importance konnte nicht berechnet werden:", e)
+            print("Could not compute permutation importance:", e)
 
     
     # 09: Overall comparison between Run 1 and Run 2
@@ -1263,13 +1262,13 @@ class AirbnbPredictionModelRunner:
         overall_summary = self.create_overall_summary()
 
         print("\n" + "=" * 80)
-        print("FERTIG")
+        print("COMPLETED")
         print("=" * 80)
-        print("Ergebnisse gespeichert in:")
+        print("Results saved in:")
         print(self.output_base_dir)
 
         if overall_summary is not None:
-            print("\nGesamtvergleich:")
+            print("\nOverall Summary:")
             print(overall_summary[["run", "model", "test_mae", "test_rmse", "test_r2"]])
 
         return overall_summary

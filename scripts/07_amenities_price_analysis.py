@@ -39,7 +39,7 @@ class AmenitiesPriceAnalyzer:
         file_path = Path(file_path)
 
         if not file_path.exists():
-            raise FileNotFoundError(f"Datei nicht gefunden: {file_path.resolve()}")
+            raise FileNotFoundError(f"File not found: {file_path.resolve()}")
 
         df = pd.read_csv(
             file_path,
@@ -107,8 +107,7 @@ class AmenitiesPriceAnalyzer:
     @staticmethod
     def make_unique_column_names(names):
         """
-        Falls nach der Bereinigung doppelte Spaltennamen entstehen,
-        wird _2, _3 usw. ergänzt.
+        Appends _2, _3 etc. if duplicate column names arise after cleaning.
         """
         seen = {}
         unique_names = []
@@ -133,16 +132,16 @@ class AmenitiesPriceAnalyzer:
         price_df = self.load_csv(price_file)
 
         if "id" not in listing_df.columns:
-            raise KeyError("In 02_listing_basic.csv fehlt die Spalte 'id'.")
+            raise KeyError("Column 'id' missing in 02_listing_basic.csv.")
 
         if "amenities" not in listing_df.columns:
-            raise KeyError("In 02_listing_basic.csv fehlt die Spalte 'amenities'.")
+            raise KeyError("Column 'amenities' missing in 02_listing_basic.csv.")
 
         if "id" not in price_df.columns:
-            raise KeyError("In 01_target_price.csv fehlt die Spalte 'id'.")
+            raise KeyError("Column 'id' missing in 01_target_price.csv.")
 
         if "price" not in price_df.columns:
-            raise KeyError("In 01_target_price.csv fehlt die Spalte 'price'.")
+            raise KeyError("Column 'price' missing in 01_target_price.csv.")
 
         df = listing_df[["id", "amenities"]].merge(
             price_df[["id", "price"]],
@@ -160,13 +159,13 @@ class AmenitiesPriceAnalyzer:
         if self.remove_top_price_outliers:
             upper_limit = df["price"].quantile(self.price_upper_quantile)
             df = df[df["price"] <= upper_limit].copy()
-            print(f"Top-Ausreißer entfernt. Preisgrenze bei {self.price_upper_quantile:.2f}-Quantil: {upper_limit:.2f}")
+            print(f"Top outliers removed. Price upper threshold at {self.price_upper_quantile:.2f}-quantile: {upper_limit:.2f}")
 
         df["amenities_list"] = df["amenities"].apply(self.parse_amenities)
 
         self.df = df
 
-        print("Geladene und gemergte Daten:", self.df.shape)
+        print("Loaded and merged data:", self.df.shape)
 
         return self.df
 
@@ -205,19 +204,19 @@ class AmenitiesPriceAnalyzer:
             "amenity_column": cleaned_names
         })
 
-        # Häufigkeiten berechnen
+        # Calculate frequencies
         counts = binary_df.drop(columns=["id", "price"]).sum().sort_values(ascending=False)
 
         valid_cols = counts[counts >= self.min_count].index.tolist()
 
-        print(f"Alle Amenities: {len(counts)}")
-        print(f"Amenities mit mindestens {self.min_count} Vorkommen: {len(valid_cols)}")
+        print(f"Total amenities: {len(counts)}")
+        print(f"Amenities with at least {self.min_count} occurrences: {len(valid_cols)}")
 
         filtered_binary_df = binary_df[["id", "price"] + valid_cols].copy()
 
         self.amenities_binary = filtered_binary_df
 
-        # Dateien speichern
+        # Save files
         binary_path = self.output_dir / f"amenities_binary_min{self.min_count}.csv"
         mapping_path = self.output_dir / "amenities_column_mapping.csv"
 
@@ -237,8 +236,8 @@ class AmenitiesPriceAnalyzer:
             encoding=self.encoding
         )
 
-        print("Binary Amenities Datei gespeichert:", binary_path)
-        print("Amenity Mapping gespeichert:", mapping_path)
+        print("Binary amenities file saved:", binary_path)
+        print("Amenity mapping saved:", mapping_path)
 
         return filtered_binary_df
 
@@ -329,7 +328,7 @@ class AmenitiesPriceAnalyzer:
             encoding=self.encoding
         )
 
-        print("Amenity Importance Datei gespeichert:", output_path)
+        print("Amenity importance file saved:", output_path)
 
         return importance
 

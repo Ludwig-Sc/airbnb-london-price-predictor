@@ -22,7 +22,7 @@ class PredictorWithIDCreator:
         path = self.category_dir / filename
 
         if not path.exists():
-            raise FileNotFoundError(f"Datei nicht gefunden: {path}")
+            raise FileNotFoundError(f"File not found: {path}")
 
         df = pd.read_csv(
             path,
@@ -144,10 +144,10 @@ class PredictorWithIDCreator:
             encoding=self.encoding
         )
 
-        print("Neue Predictor-Datei gespeichert:")
+        print("New predictor file saved:")
         print(self.output_file)
         print("Shape:", df.shape)
-        print("Spalten:", df.columns.tolist())
+        print("Columns:", df.columns.tolist())
 
         return df
 

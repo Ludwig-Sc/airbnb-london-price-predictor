@@ -31,10 +31,10 @@ class AirbnbPricePredictionApp:
 
     def load(self):
         if not self.model_path.exists():
-            raise FileNotFoundError(f"Modell nicht gefunden: {self.model_path}")
+            raise FileNotFoundError(f"Model not found: {self.model_path}")
 
         if not self.model_dataset_path.exists():
-            raise FileNotFoundError(f"Modelldatensatz nicht gefunden: {self.model_dataset_path}")
+            raise FileNotFoundError(f"Model dataset not found: {self.model_dataset_path}")
 
         self.model = joblib.load(self.model_path)
 
@@ -79,7 +79,7 @@ class AirbnbPricePredictionApp:
             missing = [col for col in needed_cols if col not in self.predictions_df.columns]
 
             if missing:
-                st.warning(f"Prediction-Interval nicht verfügbar. Fehlende Spalten: {missing}")
+                st.warning(f"Prediction interval unavailable. Missing columns: {missing}")
                 self.predictions_df = None
             else:
                 self.predictions_df["actual_price"] = pd.to_numeric(
@@ -196,8 +196,7 @@ st.set_page_config(
 
 st.title("London Airbnb Price Predictor")
 st.write(
-    "Gib Eigenschaften eines Airbnb ein. "
-    "Das Modell schätzt daraus den erwarteten Preis pro Nacht."
+    "Configure listing characteristics to estimate the expected nightly price in London."
 )
 
 
@@ -222,7 +221,7 @@ default_row = app.create_default_input_row()
 # Input form
 
 
-st.sidebar.header("Listing-Eigenschaften")
+st.sidebar.header("Listing Characteristics")
 
 input_data = default_row.copy()
 
@@ -231,7 +230,7 @@ input_data = default_row.copy()
 # Main Features
 
 
-st.sidebar.subheader("Grunddaten")
+st.sidebar.subheader("Core Attributes")
 
 if "bedrooms" in app.feature_columns:
     input_data["bedrooms"] = st.sidebar.number_input(
@@ -287,7 +286,7 @@ if "bathrooms" in app.feature_columns:
 # Categories / Location
 
 
-st.sidebar.subheader("Typ und Lage")
+st.sidebar.subheader("Type & Location")
 
 if "room_type" in app.feature_columns:
     room_types = sorted(app.reference_df["room_type"].dropna().astype(str).unique())
@@ -367,12 +366,12 @@ if (
     listings_count = int(selected_geo["listings_count"])
 
     st.sidebar.caption(
-        f"Koordinaten automatisch gesetzt auf den Mittelpunkt von "
-        f"{selected_neighbourhood} basierend auf {listings_count} Listings."
+        f"Coordinates automatically set to the centroid of "
+        f"{selected_neighbourhood} based on {listings_count} listings."
     )
 
     manual_coordinates = st.sidebar.checkbox(
-        "Koordinaten manuell überschreiben",
+        "Manually override coordinates",
         value=False
     )
 
@@ -396,7 +395,7 @@ if (
         )
 
         st.sidebar.warning(
-            "Achtung: Manuelle Koordinaten können der ausgewählten Neighbourhood widersprechen."
+            "Warning: Manual coordinates may conflict with the selected neighbourhood boundaries."
         )
 
     else:
@@ -404,14 +403,14 @@ if (
         input_data["longitude"] = auto_longitude
 
         st.sidebar.number_input(
-            "Latitude automatisch",
+            "Automatic Latitude",
             value=auto_latitude,
             format="%.6f",
             disabled=True
         )
 
         st.sidebar.number_input(
-            "Longitude automatisch",
+            "Automatic Longitude",
             value=auto_longitude,
             format="%.6f",
             disabled=True
@@ -558,26 +557,26 @@ upper = prediction_result["upper"]
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric("Geschätzter Preis pro Nacht", f"£{prediction:,.2f}")
+    st.metric("Estimated Nightly Price", f"£{prediction:,.2f}")
 
 with col2:
     if lower is not None and upper is not None:
-        st.metric("90%-Prognoseintervall", f"£{lower:,.0f} – £{upper:,.0f}")
+        st.metric("90% Prediction Interval", f"£{lower:,.0f} – £{upper:,.0f}")
     else:
-        st.metric("90%-Prognoseintervall", "Nicht verfügbar")
+        st.metric("90% Prediction Interval", "Unavailable")
 
 with col3:
-    st.metric("Modell", "London Airbnb Price Estimator")
+    st.metric("Model", "London Airbnb Price Estimator")
 if lower is not None and upper is not None:
     st.info(
-        f"Das Modell schätzt einen Preis von **£{prediction:,.2f}**. "
-        f"Basierend auf ähnlichen Testfällen liegt ein realistischer Bereich "
-        f"ungefähr zwischen **£{lower:,.0f} und £{upper:,.0f}**."
+        f"The model estimates a nightly price of **£{prediction:,.2f}**. "
+        f"Based on similar test cases, a realistic 90% confidence range is "
+        f"approximately **£{lower:,.0f} to £{upper:,.0f}**."
     )
 else:
     st.info(
-        f"Das Modell schätzt einen Preis von **£{prediction:,.2f}**. "
-        "Ein Prognoseintervall konnte nicht berechnet werden, weil keine Test-Predictions geladen wurden."
+        f"The model estimates a nightly price of **£{prediction:,.2f}**. "
+        "Prediction interval could not be calculated because test predictions were not loaded."
     )
 
 
@@ -587,7 +586,7 @@ else:
 
 
 
-with st.expander("Verwendete Eingabedaten anzeigen"):
+with st.expander("View Input Feature Vector"):
     input_df_display = pd.DataFrame([input_data]).T
     input_df_display.columns = ["value"]
     st.dataframe(input_df_display)

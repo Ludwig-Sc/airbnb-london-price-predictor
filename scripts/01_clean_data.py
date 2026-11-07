@@ -114,5 +114,5 @@ df.to_csv(
     encoding="utf-8-sig"
 )
 
-print("Bereinigte Datei gespeichert als:", output_file)
+print("Cleaned file saved as:", output_file)
 print("Cleaned Shape:", df.shape)

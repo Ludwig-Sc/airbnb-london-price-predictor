@@ -188,7 +188,7 @@ if remaining_cols:
         encoding="utf-8-sig"
     )
 
-    print("99_remaining_columns.csv gespeichert mit:", remaining_cols)
+    print("99_remaining_columns.csv saved with:", remaining_cols)
 else:
     print("No remaining columns left.")
 

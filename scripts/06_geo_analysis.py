@@ -36,35 +36,35 @@ print(df[['latitude', 'longitude', 'price']].head())
 print(df['price'].describe())
 
 # 05: Check price outliers
-print(df[df['price'] > 10000].shape[0], "Listings über 10.000")
-print(df[df['price'] > 1000].shape[0], "Listings über 1.000")
-print(df[df['price'] > 500].shape[0], "Listings über 500")
+print(df[df['price'] > 10000].shape[0], "Listings above 10,000")
+print(df[df['price'] > 1000].shape[0], "Listings above 1,000")
+print(df[df['price'] > 500].shape[0], "Listings above 500")
 
 Q1 = df['price'].quantile(0.25)
 Q3 = df['price'].quantile(0.75)
 IQR = Q3 - Q1
 
-obergrenze = Q3 + 3 * IQR  
+upper_bound = Q3 + 3 * IQR  
 
-print(f"Obergrenze: {obergrenze:.2f}")
+print(f"Upper bound: {upper_bound:.2f}")
 
-df = df[df['price'] <= obergrenze]
+df = df[df['price'] <= upper_bound]
 print(df.shape)
 print(df['price'].describe())
 
-print(f"Obergrenze: {obergrenze:.2f}")
+print(f"Upper bound: {upper_bound:.2f}")
 
 import folium
 from folium.plugins import HeatMap
 
 # 06: Create map – centered on London
-karte = folium.Map(location=[51.5074, -0.1278], zoom_start=11)
+london_map = folium.Map(location=[51.5074, -0.1278], zoom_start=11)
 
 heat_data = df[['latitude', 'longitude', 'price']].values.tolist()
-HeatMap(heat_data, min_opacity=0.3, radius=8).add_to(karte)
+HeatMap(heat_data, min_opacity=0.3, radius=8).add_to(london_map)
 
-karte.save(MAP_PATH + 'london_heatmap.html')
-print("Karte gespeichert!")
+london_map.save(MAP_PATH + 'london_heatmap.html')
+print("Heatmap saved!")
 
 # 07: Load 
 import requests
@@ -75,32 +75,32 @@ response = requests.get(url)
 london_geo = response.json()
 
 # 08: Calculate the average price per district
-preis_pro_stadtteil = df.groupby('neighbourhood_cleansed')['price'].mean().reset_index()
-preis_pro_stadtteil.columns = ['neighbourhood', 'avg_price']
+price_per_borough = df.groupby('neighbourhood_cleansed')['price'].mean().reset_index()
+price_per_borough.columns = ['neighbourhood', 'avg_price']
 
-print(preis_pro_stadtteil.sort_values('avg_price', ascending=False).head(10))
+print(price_per_borough.sort_values('avg_price', ascending=False).head(10))
 
 # 09: Create a choropleth map
 
 import folium
 
-choropleth_karte = folium.Map(location=[51.5074, -0.1278], zoom_start=10)
+choropleth_map = folium.Map(location=[51.5074, -0.1278], zoom_start=10)
 
 folium.Choropleth(
     geo_data=london_geo,
-    data=preis_pro_stadtteil,
+    data=price_per_borough,
     columns=['neighbourhood', 'avg_price'],
     key_on='feature.properties.name',
     fill_color='YlOrRd',
     fill_opacity=0.7,
     line_opacity=0.5,
-    legend_name='Durchschnittspreis (£)'
-).add_to(choropleth_karte)
+    legend_name='Average Price (£)'
+).add_to(choropleth_map)
 
-choropleth_karte.save(MAP_PATH + 'london_choropleth.html')
+choropleth_map.save(MAP_PATH + 'london_choropleth.html')
 print("Choropleth map saved!")
 
-# 10: Caclucate Distances
+# 10: Calculate Distances
 
 from math import radians, sin, cos, sqrt, atan2
 
@@ -124,12 +124,13 @@ import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 6))
 plt.scatter(df['dist_center_km'], df['price'], alpha=0.1, s=5)
-plt.xlabel('Distanz zum Zentrum (km)')
-plt.ylabel('Preis (£)')
-plt.title('Preis vs. Distanz zum Zentrum - London Airbnb')
+plt.xlabel('Distance to Center (km)')
+plt.ylabel('Price (£)')
+plt.title('Price vs. Distance to Center - London Airbnb')
+plt.savefig(FIGURE_PATH + 'price_vs_distance.png', dpi=150)
 plt.savefig(FIGURE_PATH + 'preis_vs_distanz.png', dpi=150)
 plt.show()
-print("Plot gespeichert!")
+print("Price vs distance plot saved!")
 
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -148,7 +149,7 @@ print(df.groupby('geo_cluster')['price'].mean().sort_values(ascending=False))
 import matplotlib.pyplot as plt
 
 
-farben = ['red', 'blue', 'green', 'purple', 'orange', 'pink', 'brown', 'cyan']
+colors = ['red', 'blue', 'green', 'purple', 'orange', 'pink', 'brown', 'cyan']
 
 plt.figure(figsize=(12, 8))
 for cluster in range(8):
@@ -156,23 +157,23 @@ for cluster in range(8):
     plt.scatter(
         df[mask]['longitude'],
         df[mask]['latitude'],
-        c=farben[cluster],
-        label=f'Cluster {cluster} (Ø {df[mask]["price"].mean():.0f}£)',
+        c=colors[cluster],
+        label=f'Cluster {cluster} (Avg. £{df[mask]["price"].mean():.0f})',
         alpha=0.3,
         s=5
     )
 
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
-plt.title('Geo-Cluster London Airbnb')
+plt.title('London Airbnb Geo-Clusters')
 plt.legend(loc='upper left', markerscale=3)
 plt.savefig(FIGURE_PATH + 'geo_cluster.png', dpi=150)
 plt.show()
-print("Cluster-Plot gespeichert!")
+print("Cluster plot saved!")
 
 # 13: Calculate the average price per district
-stadtteil_preis = df.groupby('neighbourhood_cleansed')['price'].mean()
-df['neighbourhood_avg_price'] = df['neighbourhood_cleansed'].map(stadtteil_preis)
+borough_avg_price = df.groupby('neighbourhood_cleansed')['price'].mean()
+df['neighbourhood_avg_price'] = df['neighbourhood_cleansed'].map(borough_avg_price)
 
 print(df[['neighbourhood_cleansed', 'neighbourhood_avg_price', 'price']].head())
 
